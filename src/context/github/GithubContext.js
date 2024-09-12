@@ -9,7 +9,8 @@ const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 export const GithubProvider = ({ children }) => {
   const initialState = {
     users: [],
-    user: null,
+    user: {},
+    repos: [],
     loading: false,
   };
 
@@ -32,11 +33,13 @@ export const GithubProvider = ({ children }) => {
     // destructure items from reponse
     const { items } = await res.json();
 
-    // dispatch the users to update state in context
-    dispatch({
-      type: "GET_USERS",
-      payload: items,
-    });
+    if (items.length > 0) {
+      // dispatch the users to update state in context
+      dispatch({
+        type: "GET_USERS",
+        payload: items,
+      });
+    }
   };
 
   // Get single user
@@ -62,6 +65,28 @@ export const GithubProvider = ({ children }) => {
     }
   };
 
+  // Get User Repos
+  const getUserRepos = async (login) => {
+    setLoading();
+
+    const res = await fetch(`${GITHUB_URL}/users/${login}/repos`, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+      },
+    });
+
+    // destructure items from reponse
+    const data = await res.json();
+
+    if (data.length > 0) {
+      // dispatch the users to update state in context
+      dispatch({
+        type: "GET_REPOS",
+        payload: data,
+      });
+    }
+  };
+
   // Set Loading
   const setLoading = () => dispatch({ type: "SET_LOADING" });
 
@@ -74,9 +99,11 @@ export const GithubProvider = ({ children }) => {
         users: state.users,
         loading: state.loading,
         user: state.user,
+        repos: state.repos,
         searchUsers,
         clearUsers,
         getUser,
+        getUserRepos,
       }}
     >
       {children}
