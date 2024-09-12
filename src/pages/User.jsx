@@ -14,12 +14,14 @@ import Spinner from "../components/layout/Spinner";
 import RepoList from "../components/repos/RepoList";
 
 function User() {
-  const { getUser, user, loading } = useContext(GithubContext);
+  const { getUser, getUserRepos, user, repos, loading } =
+    useContext(GithubContext);
 
   const params = useParams();
 
   useEffect(() => {
     getUser(params.login);
+    getUserRepos(params.login);
   }, []);
 
   // Destructure the User attributes
@@ -163,6 +165,7 @@ function User() {
             </div>
           </div>
         </div>
+        <RepoList repos={repos} />
       </div>
     </>
   );
@@ -172,4 +175,4 @@ export default User;
 // TODO: make the user image smaller for mobile
 // make the stats into a 2x2 instead of a 1x4 as it needs to be scrolled otherwise
 // change the icon colours from magenta to white or blue something more aligned with github colors
-//
+// Add the github iconic puzzle tile above the stats section
